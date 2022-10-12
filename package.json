@@ -1,0 +1,27 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "jest --forceExit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GCP-CICD/SERVER.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GCP-CICD/SERVER/issues"
+  },
+  "homepage": "https://github.com/GCP-CICD/SERVER#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "jest": "^29.1.2",
+    "supertest": "^6.3.0"
+  }
+}
