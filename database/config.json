@@ -1,0 +1,16 @@
+{
+  "development": {
+    "username": "root",
+    "host": "35.236.180.84",
+    "database": "northwind",
+    "password": "0000",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "egg-sequelize-doc-unittest",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
