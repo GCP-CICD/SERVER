@@ -93,6 +93,10 @@ module.exports = app => {
         allowNull: false,
         defaultValue: app.Sequelize.literal('CURRENT_TIMESTAMP'),
       },
+      picture: {
+        type: DataTypes.BLOB,
+        allowNull: true,
+      },
     },
     {
       tableName: 'employees',

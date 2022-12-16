@@ -1,6 +1,6 @@
 const toInt = require('./toInt');
 const { Op, fn, col } = require('sequelize');
-module.exports = queryOrigin => {
+module.exports = (queryOrigin, id) => {
   const query = {
     limit: toInt(queryOrigin.limit),
     offset: toInt(queryOrigin.offset),

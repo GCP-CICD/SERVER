@@ -5,24 +5,77 @@ const _res = require('../lib/_res.js');
 const toInt = require('../lib/toInt');
 const queryFormat = require('../lib/queryFormat.js');
 
-class MainController extends Controller {
+class RouteController extends Controller {
   async index() {
     const { ctx, app } = this;
-    const { pageName } = ctx.params;
-    const queryOrigin = ctx.request.query;
-    const query = queryFormat(queryOrigin);
+    const role_id = ctx.cookies.get('role_id');
 
-    const getData =
-      ctx.model[
-        pageName[0].charAt(0).toUpperCase() + pageName.slice(1)
-      ].findAll(query);
+    const getRoute = app.mysql.query(
+      `
+      SELECT
+        p.id AS parentId,
+        p.parentId AS pparentId,
+        p.title AS pTitle,
+        p.icon AS pIcon,
+        p.path AS pPath,
+        c.id AS cId,
+        c.parentId AS cparentId,
+        c.title AS cTitle,
+        c.icon AS cIcon,
+        c.path AS cPath,
+        rr.permissionView,
+        rr.permissionEdit,
+        rr.permissionDelete
+      FROM
+      (
+        role_route AS rr
+      LEFT JOIN route AS p
+      ON
+        p.id = rr.routeId
+      )
+      LEFT JOIN 
+        route AS c
+      ON
+        c.parentId = p.id
+      WHERE
+        rr.roleId = ? && p.parentId = 0`,
+      [role_id]
+    );
+    const getCount = app.mysql.query(
+      `SELECT COUNT(*) FROM route WHERE parentId = 0`
+    );
 
-    const syntax = `SELECT COUNT(*) FROM ?`.replace('?', pageName);
-    const getCount = app.mysql.query(syntax);
+    const [route, count] = await Promise.all([getRoute, getCount]);
+    let route_children = [];
+    let newRoute = [];
+    route.forEach((v, i, a) => {
+      route_children.push({
+        id: v.cId,
+        parentId: v.cparentId,
+        title: v.cTitle,
+        icon: v.cIcon,
+        path: v.cPath,
+        permissionView: v.permissionView,
+        permissionEdit: v.permissionEdit,
+        permissionDelete: v.permissionDelete,
+      });
+      if (v.parentId !== a[i + 1]?.parentId) {
+        newRoute.push({
+          id: v.parentId,
+          parentId: v.pparentId,
+          title: v.pTitle,
+          icon: v.pIcon,
+          path: v.pPath,
 
-    const [data, count] = await Promise.all([getData, getCount]);
+          children: route_children,
+        });
+        route_children = [];
+      }
+    });
 
-    ctx.body = new _res({ data: { data, count: count[0]['COUNT(*)'] } });
+    ctx.body = new _res({
+      data: { data: newRoute, count: count[0]['COUNT(*)'] },
+    });
   }
 
   async show() {
@@ -108,4 +161,4 @@ class MainController extends Controller {
   }
 }
 
-module.exports = MainController;
+module.exports = RouteController;

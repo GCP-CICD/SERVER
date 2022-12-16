@@ -33,8 +33,13 @@ module.exports = appInfo => {
     define: {
       //freezeTableName默认值为false，会自动在表名后加s
       freezeTableName: true,
-      // timestamps默认值为true，会自动添加create_time和update_time
-      timestamps: false,
+      // timestamps要啟用createdAt那些才會生效,sql語句才會加進去
+      // timestamps: false,
+      timestamps: true,
+      createdAt: 'created_at', //定義名稱
+      updatedAt: 'updated_at',
+      // paranoid: true,//要有此項 deletedAt 才生效（這邊寫在各model裡）
+      deletedAt: 'deleted_at',
     },
   };
 
