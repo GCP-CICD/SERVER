@@ -23,6 +23,7 @@ module.exports = app => {
     },
     {
       tableName: 'role',
+      paranoid: true,
     }
   );
 

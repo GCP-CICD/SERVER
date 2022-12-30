@@ -11,6 +11,8 @@ class HomeController extends Controller {
   async schema() {
     const { ctx, app } = this;
     const { pageName } = ctx.request.query;
+    const {} = ctx.request.body;
+    const {} = ctx.params;
 
     const result = await app.mysql.query(
       `

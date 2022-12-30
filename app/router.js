@@ -11,6 +11,8 @@ module.exports = app => {
   router.get('/schema', controller.home.schema);
 
   router.resources('route', '/route', controller.route);
+
   router.resources('main', '/:pageName', controller.main);
+
   router.get('/:pageName/restore/:id', controller.main.restore);
 };

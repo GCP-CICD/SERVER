@@ -3,26 +3,29 @@
 const { Controller } = require('egg');
 const _res = require('../lib/_res.js');
 const toInt = require('../lib/toInt');
-const queryFormat = require('../lib/queryFormat.js');
+const formatPayload = require('../lib/formatPayload.js');
 
 class MainController extends Controller {
   async index() {
+    console.log('get');
     const { ctx, app } = this;
     const { pageName } = ctx.params;
-    const queryOrigin = ctx.request.query;
-    const query = queryFormat(queryOrigin);
+
+    const query = formatPayload({ type: 'get', payload: ctx.request.query });
 
     const getData =
       ctx.model[
         pageName[0].charAt(0).toUpperCase() + pageName.slice(1)
       ].findAll(query);
 
-    const syntax = `SELECT COUNT(*) FROM ?`.replace('?', pageName);
-    const getCount = app.mysql.query(syntax);
+    const getCount =
+      ctx.model[pageName[0].charAt(0).toUpperCase() + pageName.slice(1)].count(
+        query
+      );
 
     const [data, count] = await Promise.all([getData, getCount]);
 
-    ctx.body = new _res({ data: { data, count: count[0]['COUNT(*)'] } });
+    ctx.body = new _res({ data: { data, count } });
   }
 
   async show() {
@@ -39,12 +42,13 @@ class MainController extends Controller {
   }
 
   async create() {
+    console.log('post');
     const ctx = this.ctx;
     const { pageName } = ctx.params;
 
     // const{ id,name,... } = ctx.request.body; 省略這段改為下面的
-    const body = ctx.request.body;
-    console.log(body);
+    const body = formatPayload({ type: 'post', payload: ctx.request.body });
+
     const data = await ctx.model[
       pageName[0].charAt(0).toUpperCase() + pageName.slice(1)
     ].create(body);
@@ -53,6 +57,8 @@ class MainController extends Controller {
   }
 
   async update() {
+    console.log('put');
+
     const ctx = this.ctx;
     const { pageName, id = toInt(ctx.params.id) } = ctx.params;
 
@@ -70,6 +76,9 @@ class MainController extends Controller {
   }
 
   async destroy() {
+    console.log('deleted');
+
+    //軟刪除(1.model的 paranoid: true  2.資料表要有deleted_at)
     const ctx = this.ctx;
     const { force } = ctx.request.query;
 
@@ -91,6 +100,8 @@ class MainController extends Controller {
     ctx.body = new _res({ data });
   }
   async restore() {
+    console.log('restore');
+
     const ctx = this.ctx;
     const { pageName } = ctx.params;
     const id = toInt(ctx.params.id);

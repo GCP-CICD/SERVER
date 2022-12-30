@@ -3,7 +3,7 @@
 const { Controller } = require('egg');
 const _res = require('../lib/_res.js');
 const toInt = require('../lib/toInt');
-const queryFormat = require('../lib/queryFormat.js');
+const formatPayload = require('../lib/formatPayload.js');
 
 class RouteController extends Controller {
   async index() {
